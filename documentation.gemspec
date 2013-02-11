@@ -16,4 +16,5 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
 
   gem.add_runtime_dependency "redcarpet", "~> 2.2"
+  gem.add_runtime_dependency "babosa",    "~> 0.3"
 end
