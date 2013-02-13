@@ -1,4 +1,4 @@
-Ruby Documentation Project
+Ruby Documentation Project [![Build Status](https://travis-ci.org/nevir/rb-documentation.png)](https://travis-ci.org/nevir/rb-documentation)
 ==========================
 
 Ruby is such a fantastic language, but why doesn't it have equally fantastic
