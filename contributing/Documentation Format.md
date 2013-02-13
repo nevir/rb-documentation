@@ -38,8 +38,8 @@ Headers
 
 All headers...
 
-* All headers should have two blank lines as margin above them (unless at the
-  top of the file).
+* All headers should have one or two blank lines as margin above them (unless at
+  the top of the file).
 
 * All headers should have one blank line as margin below them.
 
@@ -58,7 +58,6 @@ Second Level Header
 -------------------
 
 The second point makes a good point, don't you think?
-
 
 ### Third Level Header
 
@@ -95,12 +94,12 @@ The headers and short description are explicitly parsed and used as metadata for
 indexing and summarizing various portions of the documentation.
 
 
-Tables of Content
------------------
+Section Outlines
+----------------
 
-Any `README.md` section containing **only* a list of links is considered to be
-part of the table of contents that the file describes.  Nested headers are also
-supported.
+Any `README.md` section labeled "Outline" is considered to be a special section.
+Any lists of items that are pure links will be extracted, along with any sub
+headings, as the outline for that particular directory.
 
 This is used to group methods/classes/modules by area of responsibility.  They
 are also extracted to provide navigation throughout the documentation.
@@ -115,15 +114,16 @@ further break them down by responsibility:
 ...
 
 
+Outline
+=======
+
 Class Methods
 -------------
 
 * [`new`](class_methods/new.md)
 
-
 Instance Methods
 ----------------
-
 
 ### Comparisons
 
@@ -132,11 +132,9 @@ Instance Methods
 * [`==`](instance_methods/equality_operator.md)
 * [`equal?`](instance_methods/equality_operator.md)
 
-
 ### Object Metadata
 
 * [`__id__`](instance_methods/reserved_id.md)
-
 
 ### Message Sending & Execution
 
@@ -224,3 +222,5 @@ standard Markdown links, with a _relative_ path.
 
 Relative links help generic Markdown tools to properly set up the links, as well
 as navigation on GitHub.
+
+TODO: The format should support smart links to symbols, etc.
