@@ -38,10 +38,10 @@ Headers
 
 All headers...
 
-* All headers should have one or two blank lines as margin above them (unless at
+* ...should have one or two blank lines as margin above them (unless at
   the top of the file).
 
-* All headers should have one blank line as margin below them.
+* ...should have one blank line as margin below them.
 
 * First- and second-level headers should follow the underlined (Setext) style.
 
@@ -124,6 +124,9 @@ Class Methods
 
 Instance Methods
 ----------------
+
+Paragraphs can be inserted to add additional context, but they _will not_ be
+extracted for navigation.  Users viewing this particular file will see them.
 
 ### Comparisons
 
