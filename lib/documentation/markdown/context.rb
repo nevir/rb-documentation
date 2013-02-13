@@ -7,7 +7,7 @@ module Documentation::Markdown; end
 class Documentation::Markdown::Context < Redcarpet::Markdown
 
   # We extend redcarpet's render result to contain additional metadata.
-  Result = Struct.new(:body, :metadata)
+  Result = Struct.new(:body, :metadata, :toc_root)
 
   # Options accept both `Redcarpet::Markdown` AND renderer options; there isn't
   # any overlap currently, or in the foreseeable future.
@@ -32,10 +32,12 @@ class Documentation::Markdown::Context < Redcarpet::Markdown
     end
 
     Result.new.tap do |result|
-      result.body     = super(body)
-      result.metadata = @renderer.metadata
+      @renderer.setup!
 
-      @renderer.reset!
+      result.body = super(body)
+
+      result.metadata = @renderer.metadata
+      result.toc_root = @renderer.toc_root
     end
   end
 

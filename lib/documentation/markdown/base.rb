@@ -1,6 +1,9 @@
 require "set"
 require "babosa"
 
+require "documentation/markdown/header_node"
+require "documentation/markdown/outline_node"
+
 module Documentation; end
 module Documentation::Markdown; end
 
@@ -8,22 +11,22 @@ module Documentation::Markdown; end
 # the way we like.
 module Documentation::Markdown::Base
 
+  class SyntaxError < TypeError; end
+
   # Metadata
   # --------
 
-  def metadata
-    @metadata ||= {}
+  # Renderers get reused; this is where we set up a blank slate
+  def setup!
+    @metadata     = {}
+    @headers_seen = Set.new
+    @toc_root     = nil
+
+    @current_toc_stack = []
   end
 
-  def headers_seen
-    @headers_seen ||= Set.new
-  end
-
-  # Renderers get reused; this is where we clear our custom state
-  def reset!
-    @metadata     = nil
-    @headers_seen = nil
-  end
+  attr_reader :metadata
+  attr_reader :toc_root
 
 
   # Required Hooks
@@ -89,17 +92,60 @@ module Documentation::Markdown::Base
   end
 
   def header(text, header_level)
+    slug = slug_for_header_text(text)
+
+    if @toc_root
+      append_header(text, slug, header_level)
+    else
+      assign_toc_root(text, slug, header_level)
+    end
+
+    process_header(text, slug, header_level)
+  end
+
+  def slug_for_header_text(text)
     clean_text = text.gsub(/<[^>]+>/, "").gsub(/([^A-Z])([A-Z]+)/, "\\1-\\2")
     slug_base  = Babosa::Identifier.new(clean_text).with_separators.normalize.to_s
 
     slug = slug_base
     i    = 1
-    while headers_seen.include? slug
+    while @headers_seen.include? slug
       slug = "#{slug_base}-#{i += 1}"
     end
-    headers_seen.add(slug)
+    @headers_seen.add(slug)
 
-    process_header(text, slug, header_level)
+    slug
+  end
+
+  def append_header(text, slug, header_level)
+    new_node = Documentation::Markdown::HeaderNode.new(text, slug, header_level)
+
+    # Pop back up to this node's level
+    @current_toc_stack.slice! header_level..-1
+    parent_node = @current_toc_stack.last
+
+    unless parent_node.level == new_node.level - 1
+      raise SyntaxError, "Header levels must increase linearly.  #{new_node.inspect} skipped one or more levels - parent is #{parent_node.inspect}"
+    end
+
+    parent_node.children.push new_node
+    @current_toc_stack.push   new_node
+
+    new_node
+  end
+
+  def assign_toc_root(text, slug, header_level)
+    if header_level > 1
+      raise SyntaxError, "First header of file MUST be a level one header.  Got #{text.inspect} as a level #{header_level} instead."
+    end
+
+    @toc_root    = Documentation::Markdown::HeaderNode.new(nil, nil, 0)
+    first_header = Documentation::Markdown::HeaderNode.new(text, slug, header_level)
+    @toc_root.children.push first_header
+
+    @current_toc_stack = [@toc_root, first_header]
+
+    @toc_root
   end
 
 end
