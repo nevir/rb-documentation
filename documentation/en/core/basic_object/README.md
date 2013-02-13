@@ -40,15 +40,16 @@ WARNING:
   want to refer to them explicitly, such as: `::Kernel::puts "output"`.
 
 
+Outline
+=======
+
 Class Methods
 -------------
 
 * [`new`](class_methods/new.md)
 
-
 Instance Methods
 ----------------
-
 
 ### Comparisons
 
@@ -57,18 +58,15 @@ Instance Methods
 * [`==`](instance_methods/equality_operator.md)
 * [`equal?`](instance_methods/equality_operator.md)
 
-
 ### Object Metadata
 
 * [`__id__`](instance_methods/reserved_id.md)
-
 
 ### Message Sending & Execution
 
 * [`__send__`](instance_methods/reserved_send.md)
 * [`instance_eval`](instance_methods/instance_eval.md)
 * [`instance_exec`](instance_methods/instance_exec.md)
-
 
 Private Instance Methods
 ------------------------

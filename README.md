@@ -22,3 +22,13 @@ as well as the [written style guide](contributing/Style Guide.md).
 
 Then, just dive in and pick a portion of Ruby that you're passionate about;
 there's plenty to go around!
+
+
+Show Me The Docs!
+-----------------
+
+You're probably looking for [Clarity](https://github.com/nevir/clarity), the
+friendly neighborhood documentation server (Actual URL TBD).  Alternatively,
+take a look at the raw source (just Markdown; it doesn't bite!):
+
+* [English](documentation/en)

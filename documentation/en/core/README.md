@@ -2,6 +2,9 @@ Core Library
 ============
 
 
+Outline
+=======
+
 Foundational Types
 ------------------
 
@@ -9,7 +12,6 @@ Foundational Types
 * [`Object`](object)
 * [`Module`](module)
 * [`Class`](class)
-
 
 Base Data Types
 ---------------
