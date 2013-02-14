@@ -16,31 +16,43 @@ module Documentation::Markdown::Base
   # Metadata
   # --------
 
-  # Renderers get reused; this is where we set up a blank slate
-  def setup!
-    @metadata     = {}
-    @headers_seen = Set.new
-    @toc_root     = nil
-
-    @current_toc_stack = []
+  def metadata
+    @metadata ||= {}
   end
 
-  attr_reader :metadata
-  attr_reader :toc_root
+  def headers_seen
+    @headers_seen ||= Set.new
+  end
+
+  def current_toc_stack
+    @current_toc_stack ||= [toc_root]
+  end
+
+  def toc_root
+    @toc_root ||= Documentation::Markdown::HeaderNode.new(nil, nil, 0)
+  end
+
+  # Renderers get reused; this is where we set up a blank slate
+  def reset_for_reuse!
+    @metadata          = nil
+    @headers_seen      = nil
+    @toc_root          = nil
+    @current_toc_stack = nil
+  end
 
 
   # Required Hooks
   # --------------
 
-  def process_code_block(code, language)
+  def process_code_block(_code, _language)
     raise NotImplementedError, "#{self.class}#process_code_block is not implemented!"
   end
 
-  def process_block_annotation(type, body)
+  def process_block_annotation(_type, _body)
     raise NotImplementedError, "#{self.class}#process_block_annotation is not implemented!"
   end
 
-  def process_header(text, slug, header_level)
+  def process_header(_text, _slug, _header_level)
     raise NotImplementedError, "#{self.class}#process_header is not implemented!"
   end
 
@@ -61,11 +73,9 @@ module Documentation::Markdown::Base
     end
   end
 
-
-
   def process_metadata_annotation(type, body)
     if metadata.has_key? type
-      $stderr.puts "Multiple instances of annotatinon type: #{type.inspect}.  Bashing over previous value: #{metadata[type].inspect}"
+      warn "Multiple instances of annotation type: #{type.inspect}.  Bashing over previous value: #{metadata[type].inspect} with value: #{body.inspect}"
     end
 
     metadata[type] = body
@@ -74,7 +84,7 @@ module Documentation::Markdown::Base
   end
 
   def process_unknown_annotation(type, body)
-    $stderr.puts "Unknown annotation type: #{type.inspect}, body: #{body.inspect}"
+    warn "Unknown annotation type: #{type.inspect}, body: #{body.inspect}"
 
     ""
   end
@@ -94,58 +104,34 @@ module Documentation::Markdown::Base
   def header(text, header_level)
     slug = slug_for_header_text(text)
 
-    if @toc_root
-      append_header(text, slug, header_level)
-    else
-      assign_toc_root(text, slug, header_level)
-    end
-
-    process_header(text, slug, header_level)
-  end
-
-  def slug_for_header_text(text)
-    clean_text = text.gsub(/<[^>]+>/, "").gsub(/([^A-Z])([A-Z]+)/, "\\1-\\2")
-    slug_base  = Babosa::Identifier.new(clean_text).with_separators.normalize.to_s
-
-    slug = slug_base
-    i    = 1
-    while @headers_seen.include? slug
-      slug = "#{slug_base}-#{i += 1}"
-    end
-    @headers_seen.add(slug)
-
-    slug
-  end
-
-  def append_header(text, slug, header_level)
     new_node = Documentation::Markdown::HeaderNode.new(text, slug, header_level)
 
     # Pop back up to this node's level
-    @current_toc_stack.slice! header_level..-1
-    parent_node = @current_toc_stack.last
+    current_toc_stack.slice! header_level..-1
+    parent_node = current_toc_stack.last
 
     unless parent_node.level == new_node.level - 1
       raise SyntaxError, "Header levels must increase linearly.  #{new_node.inspect} skipped one or more levels - parent is #{parent_node.inspect}"
     end
 
     parent_node.children.push new_node
-    @current_toc_stack.push   new_node
+    current_toc_stack.push    new_node
 
-    new_node
+    process_header(text, slug, header_level)
   end
 
-  def assign_toc_root(text, slug, header_level)
-    if header_level > 1
-      raise SyntaxError, "First header of file MUST be a level one header.  Got #{text.inspect} as a level #{header_level} instead."
+  def slug_for_header_text(text)
+    clean_text = text.gsub(/<[^>]+>/, "").gsub(/([^A-Z])([A-Z]+)/, "\\1-\\2")
+    slug_base  = Babosa::Identifier.new(clean_text).normalize.to_s
+
+    slug = slug_base
+    i    = 1
+    while headers_seen.include? slug
+      slug = "#{slug_base}-#{i += 1}"
     end
+    headers_seen.add(slug)
 
-    @toc_root    = Documentation::Markdown::HeaderNode.new(nil, nil, 0)
-    first_header = Documentation::Markdown::HeaderNode.new(text, slug, header_level)
-    @toc_root.children.push first_header
-
-    @current_toc_stack = [@toc_root, first_header]
-
-    @toc_root
+    slug
   end
 
 end

@@ -12,7 +12,17 @@ class Documentation::Markdown::HeaderNode
   end
 
   attr_accessor :title
+  attr_accessor :slug
   attr_accessor :level
   attr_accessor :children
+
+  def to_h
+    {
+      title:    title,
+      slug:     slug,
+      level:    level,
+      children: children.map(&:to_h),
+    }
+  end
 
 end

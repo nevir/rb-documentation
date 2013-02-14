@@ -8,6 +8,8 @@ describe Documentation::Context, "#document" do
 
     expect(doc).to be_a(Documentation::Document)
     expect(doc.rendered_source).to include("English Fixture")
+    expect(doc.rendered_source).to_not include("===============")
+
     expect(doc.toc_root).to be_a(Documentation::Markdown::HeaderNode)
   end
 
@@ -18,7 +20,7 @@ describe Documentation::Context, "#document" do
   end
 
   it "should reset the renderer" do
-    Documentation::Markdown::HTML.any_instance.should_receive(:setup!).and_call_original
+    Documentation::Markdown::HTML.any_instance.should_receive(:reset_for_reuse!).and_call_original
 
     subject.document("README.md")
   end

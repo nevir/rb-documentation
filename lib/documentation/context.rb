@@ -37,6 +37,7 @@ class Documentation::Context
   attr_reader :lang
   attr_reader :format
 
+  # Returns the document at the given path.
   def document(path)
     begin
       target_path = File.join(root_path, lang.to_s, path)
@@ -48,7 +49,7 @@ class Documentation::Context
     body = doc_file.read
     Documentation::Markdown::Preprocessing.preprocess! body
 
-    @renderer.setup!
+    @renderer.reset_for_reuse!
     rendered_source = @redcarpet.render(body)
 
     Documentation::Document.new(rendered_source, @renderer.toc_root)

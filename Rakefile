@@ -7,7 +7,7 @@ RSpec::Core::RakeTask.new(:spec) do |task|
 end
 
 desc "Run the full test suite"
-task :default => [:mutate]
+task :default => [:spec, :mutate]
 
 desc "Run the tests in CI mode"
 task :ci => [:spec, :mutate]
@@ -37,7 +37,7 @@ task :mutate do
     config.merge!(
       strategy: Mutant::Strategy::Rspec::DM2.new(config),
       killer:   Mutant::Killer::Rspec,
-      matcher:  Mutant::Matcher::ObjectSpace.new(/\ADocumentation(::(Context))\Z/),
+      matcher:  Mutant::Matcher::ObjectSpace.new(/\ADocumentation(::(Context|Markdown::Base))\Z/),
       filter:   Mutant::Mutation::Filter::ALL,
       reporter: Mutant::Reporter::CLI.new(config),
     )

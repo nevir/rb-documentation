@@ -32,6 +32,21 @@ Spork.prefork do
   RSpec.configure do |config|
     config.treat_symbols_as_metadata_keys_with_true_values = true
 
+    # Time out (particularly useful for mutant)
+    config.around(:each) do |spec|
+      # We can't use `timeout` until > rspec 2.12.2 for commit:
+      # https://github.com/rspec/rspec-core/commit/56078dad21f7c1d55dcfb54045ff34423acc8873#lib/rspec/core/formatters/base_text_formatter.rb
+      worker = Thread.new do
+        spec.run
+      end
+      worker.join(0.5)
+
+      if worker.alive?
+        worker.kill
+        raise "Spec timed out"
+      end
+    end
+
     # Be verbose about warnings
     config.around(:each) do |spec|
       old_verbose = $VERBOSE
