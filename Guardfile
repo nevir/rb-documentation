@@ -33,4 +33,5 @@ guard "rspec", cli: '--drb --drb-port 2700' do
 
   watch(%r{^spec/(.+)/shared\.rb$}) { |m| specs_for_path(m[1]) }
   watch(%r{^lib/(.+)\.rb$})         { |m| specs_for_path(m[1]) }
+  watch(%r{^spec/integration/})     { "spec/integration_spec.rb" }
 end

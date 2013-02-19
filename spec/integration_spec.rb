@@ -26,15 +26,14 @@ describe "All Together Now" do
           it "should output #{language}:#{fixture} properly" do
             doc = context.document(fixture)
 
-
-
             if ENV["REGEN_OUTPUT"]
               FileUtils.mkpath File.dirname(out_path)
               open(out_path, "w") do |file|
                 file.write(doc.rendered_source)
               end
-            else
 
+            else
+              expect(doc.rendered_source).to eq(open(out_path).read)
             end
           end
         end
