@@ -59,4 +59,18 @@ class Documentation::Context
     @root ||= document("README.md")
   end
 
+  # Converts a document path to a filesystem (relative) path.
+  def doc_to_fs_path(doc_path)
+    if doc_path.end_with?("/") || doc_path == ""
+      "#{doc_path}README.md"
+    else
+      "#{doc_path}.md"
+    end
+  end
+
+  # Converts a file system (relative) path to a document path.
+  def fs_to_doc_path(fs_path)
+    fs_path.gsub /(README)?\.md$/, ""
+  end
+
 end
