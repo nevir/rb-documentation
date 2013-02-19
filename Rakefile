@@ -51,3 +51,21 @@ task :mutate do
     exit Mutant::Runner.run(config).fail? ? 1 : 0
   end
 end
+
+namespace :integration do
+  # See [the ;spec docs](spec/).
+  desc "Regenerate integration output"
+  task :regen do
+    # untracked files are ok
+    mods = `git status --porcelain`.lines.reject { |s| s.start_with? "??" }
+    if mods.size > 0
+      $stdout.puts "Refusing to regen integration output until your working copy is clean."
+      exit 1
+    end
+
+    ENV["REGEN_OUTPUT"] = "yes"
+    system "bundle exec rspec spec/integration_spec.rb"
+
+    exit $?.exitstatus
+  end
+end
