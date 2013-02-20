@@ -56,6 +56,8 @@ namespace :integration do
   # See [the ;spec docs](spec/).
   desc "Regenerate integration output"
   task :regen do
+    require "fileutils"
+
     # untracked files are ok
     mods = `git status --porcelain`.lines.reject { |s| s.start_with? "??" }
     if mods.size > 0
@@ -64,6 +66,9 @@ namespace :integration do
     end
 
     ENV["REGEN_OUTPUT"] = "yes"
+    # Fresh start
+    FileUtils.rmtree File.expand_path("../spec/integration", __FILE__)
+
     system "bundle exec rspec spec/integration_spec.rb"
 
     exit $?.exitstatus unless $?.success?
