@@ -4,7 +4,6 @@ require "yaml"
 
 # This is a mess!
 describe "All Together Now" do
-
   fixture_root = File.expand_path("../fixtures", __FILE__)
   output_root  = File.expand_path("../integration", __FILE__)
 
@@ -15,48 +14,45 @@ describe "All Together Now" do
     fixtures_by_lang[lang].push fixture
   }
 
-  [:html].each do |format|
-    describe "#{format} formatted output" do
-      fixtures_by_lang.each do |language, fixtures|
+  def save_or_compare(output_path, type, output)
+    file_path = "#{output_path}.#{type}"
 
-        let(:context) do
-          Documentation::Context.new(fixture_root, language)
-        end
+    if ENV["REGEN_OUTPUT"]
+      FileUtils.mkpath File.dirname(file_path)
+      open(file_path, "w") do |file|
+        file.write(output)
+      end
+    else
+      expect(output).to eq(open(file_path).read)
+    end
+  end
 
-        let(:out_path) do
-          result  = File.join(output_root, format.to_s, language, fixture_path)
+  fixtures_by_lang.each do |language, fixtures|
+    context = Documentation::Context.new(fixture_root, language)
+
+    fixtures.each do |fixture|
+      describe "#{language}:#{fixture}" do
+        let(:fixture_path) { context.fs_to_doc_path(fixture) }
+        let(:doc)          { context.document(fixture_path) }
+        let(:output_path) do
+          result  = File.join(output_root, language, fixture_path)
           result += "index" if fixture_path.end_with?("/") || fixture_path == ""
-
           result
         end
 
-        def save_or_compare(output, type)
-          file_path = "#{out_path}.#{type}"
-
-          if ENV["REGEN_OUTPUT"]
-            FileUtils.mkpath File.dirname(file_path)
-            open(file_path, "w") do |file|
-              file.write(output)
-            end
-          else
-            expect(output).to eq(open(file_path).read)
+        [:html].each do |format|
+          it "should render properly as #{format}" do
+            save_or_compare(output_path, format.to_s, doc.rendered_source)
           end
         end
 
-        fixtures.each do |fixture|
-          let(:fixture_path) do
-            context.fs_to_doc_path(fixture)
-          end
-
-          it "should output #{language}:#{fixture} properly" do
-            doc = context.document(fixture_path)
-
-            save_or_compare(doc.rendered_source, "html")
-            save_or_compare(doc.toc_root.to_h.to_yaml, "toc")
-            save_or_compare(doc.metadata.to_yaml, "meta")
-          end
+        it "should extract the full table of contents" do
+          save_or_compare(output_path, "toc", doc.toc_root.to_h.to_yaml)
         end
 
+        it "should extract the document metadata" do
+          save_or_compare(output_path, "meta", doc.metadata.to_yaml)
+        end
       end
     end
   end
