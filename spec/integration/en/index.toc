@@ -1,13 +1,23 @@
----
-:title: 
-:slug: 
-:level: 0
-:children:
-- :title: Chaos
-  :slug: chaos
-  :level: 1
-  :children: []
-- :title: Outline
-  :slug: outline
-  :level: 1
-  :children: []
+{
+  "title": null,
+  "slug": null,
+  "level": 0,
+  "children": [
+    {
+      "title": "Chaos",
+      "slug": "chaos",
+      "level": 1,
+      "children": [
+
+      ]
+    },
+    {
+      "title": "Outline",
+      "slug": "outline",
+      "level": 1,
+      "children": [
+
+      ]
+    }
+  ]
+}

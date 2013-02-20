@@ -1,6 +1,6 @@
 require "documentation/context"
 require "fileutils"
-require "yaml"
+require "json"
 
 # This is a mess!
 describe "All Together Now" do
@@ -47,11 +47,11 @@ describe "All Together Now" do
         end
 
         it "should extract the full table of contents" do
-          save_or_compare(output_path, "toc", doc.toc_root.to_h.to_yaml)
+          save_or_compare(output_path, "toc", JSON.pretty_generate(doc.toc_root.to_h))
         end
 
         it "should extract the document metadata" do
-          save_or_compare(output_path, "meta", doc.metadata.to_yaml)
+          save_or_compare(output_path, "meta", JSON.pretty_generate(doc.metadata))
         end
       end
     end
