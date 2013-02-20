@@ -23,7 +23,6 @@ describe "All Together Now" do
         fixtures.each do |fixture|
           it "should output #{language}:#{fixture} properly" do
             fixture_path = context.fs_to_doc_path(fixture)
-            puts fixture_path.inspect
 
             out_path  = File.join(output_root, format.to_s, language, fixture_path)
             out_path += "index" if fixture_path.end_with?("/") || fixture_path == ""
