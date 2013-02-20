@@ -64,11 +64,14 @@ namespace :integration do
   task :regen do
     require "fileutils"
 
-    # untracked files are ok
-    mods = `git status --porcelain`.lines.reject { |s| s.start_with? "??" }
-    if mods.size > 0
-      $stdout.puts "Refusing to regen integration output until your working copy is clean."
-      exit 1
+    # Please use this sparingly
+    unless ENV.has_key? "FORCE"
+      # untracked files are ok.
+      mods = `git status --porcelain`.lines.reject { |s| s.start_with? "??" }
+      if mods.size > 0
+        $stdout.puts "Refusing to regen integration output until your working copy is clean."
+        exit 1
+      end
     end
 
     ENV["REGEN_OUTPUT"] = "yes"
@@ -79,9 +82,11 @@ namespace :integration do
 
     exit $?.exitstatus unless $?.success?
 
-    # diff changes to existing files
-    system "git add --patch spec/integration"
-    # add any new files
-    system "git add spec/integration"
+    unless ENV.has_key? "FORCE"
+      # diff changes to existing files
+      system "git add --patch spec/integration"
+      # add any new files
+      system "git add spec/integration"
+    end
   end
 end
