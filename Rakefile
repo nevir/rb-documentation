@@ -34,10 +34,16 @@ task :mutate do
       self[sym]
     end
 
+    # mutate anything that has a unit test folder
+    unit_folders   = Dir["spec/unit/**/*/"].map { |f| f[/^spec.unit.(.+)./, 1] }
+    unit_constants = unit_folders.map do |folder|
+      folder.gsub(File::SEPARATOR, "::").gsub("_", "").downcase
+    end
+
     config.merge!(
       strategy: Mutant::Strategy::Rspec::DM2.new(config),
       killer:   Mutant::Killer::Rspec,
-      matcher:  Mutant::Matcher::ObjectSpace.new(/\ADocumentation(::(Context|Markdown::Base))\Z/),
+      matcher:  Mutant::Matcher::ObjectSpace.new(/\A(#{unit_constants.join("|")})\Z/i),
       filter:   Mutant::Mutation::Filter::ALL,
       reporter: Mutant::Reporter::CLI.new(config),
     )
