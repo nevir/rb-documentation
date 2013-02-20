@@ -73,6 +73,9 @@ namespace :integration do
 
     exit $?.exitstatus unless $?.success?
 
+    # diff changes to existing files
     system "git add --patch spec/integration"
+    # add any new files
+    system "git add spec/integration"
   end
 end
