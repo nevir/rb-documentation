@@ -40,7 +40,7 @@ class Documentation::Context
   # Returns the document at the given path.
   def document(path)
     begin
-      target_path = File.join(root_path, lang.to_s, path)
+      target_path = File.join(root_path, lang.to_s, doc_to_fs_path(path))
       doc_file = open(target_path, "r")
     rescue Errno::ENOENT
       raise Documentation::DocumentNotFoundError, "No such document: #{path.inspect}, lang: #{lang} (filesystem: #{target_path.inspect})"
@@ -56,7 +56,7 @@ class Documentation::Context
   end
 
   def root
-    @root ||= document("README.md")
+    @root ||= document("")
   end
 
   # Converts a document path to a filesystem (relative) path.

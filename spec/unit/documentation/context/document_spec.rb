@@ -4,7 +4,7 @@ describe Documentation::Context, "#document" do
   include_context "default context"
 
   it "should return a well formed Document" do
-    doc = subject.document("README.md")
+    doc = subject.document("")
 
     expect(doc).to be_a(Documentation::Document)
     expect(doc.rendered_source).to include("English Fixture")
@@ -16,19 +16,19 @@ describe Documentation::Context, "#document" do
   it "should preprocess the document body" do
     Documentation::Markdown::Preprocessing.should_receive(:preprocess!)
 
-    subject.document("README.md")
+    subject.document("")
   end
 
   it "should reset the renderer" do
     Documentation::Markdown::HTML.any_instance.should_receive(:reset_for_reuse!).and_call_original
 
-    subject.document("README.md")
+    subject.document("")
   end
 
   describe "error cases" do
 
     it "should raise for unknown files" do
-      expect { subject.document("missing/stuff.md") }.to raise_error(Documentation::DocumentNotFoundError)
+      expect { subject.document("missing/stuff") }.to raise_error(Documentation::DocumentNotFoundError)
     end
 
   end

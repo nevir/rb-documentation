@@ -66,6 +66,8 @@ namespace :integration do
     ENV["REGEN_OUTPUT"] = "yes"
     system "bundle exec rspec spec/integration_spec.rb"
 
-    exit $?.exitstatus
+    exit $?.exitstatus unless $?.success?
+
+    system "git add --patch spec/integration"
   end
 end
