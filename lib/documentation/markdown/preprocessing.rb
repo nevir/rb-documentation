@@ -12,7 +12,7 @@ module Documentation::Markdown::Preprocessing
     # Grab any content immediately following the tag, or on following lines...
     (.*?)
     # ...only if they are indented.
-    (?=\n\S)
+    (?=\n\S|\Z)
   /xm
 
   # Preprocess documentation source.
@@ -43,9 +43,7 @@ module Documentation::Markdown::Preprocessing
 
       # Remove indentation from the body text, if any.
       min_indent = body_text.scan(INDENTATION_MATCHER).map { |m| m[0].length }.min || 0
-      if min_indent > 0
-        body_text.gsub! /^( {#{min_indent}})/, ""
-      end
+      body_text.gsub! /^( {#{min_indent}})/, ""
       body_text.strip!
 
       "```annotation:#{tag_name.downcase}\n#{body_text}\n```\n"
