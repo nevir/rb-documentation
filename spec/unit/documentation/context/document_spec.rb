@@ -7,8 +7,8 @@ describe Documentation::Context, "#document" do
     doc = subject.document("")
 
     expect(doc).to be_a(Documentation::Document)
-    expect(doc.rendered_source).to include("English Fixture")
-    expect(doc.rendered_source).to_not include("===============")
+    expect(doc.rendered_source).to include("Chaos")
+    expect(doc.rendered_source).to_not include("=====")
 
     expect(doc.toc_root).to be_a(Documentation::Markdown::HeaderNode)
   end

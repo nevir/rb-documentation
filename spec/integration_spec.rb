@@ -53,6 +53,7 @@ describe "All Together Now" do
 
             save_or_compare(doc.rendered_source, "html")
             save_or_compare(doc.toc_root.to_h.to_yaml, "toc")
+            save_or_compare(doc.metadata.to_yaml, "meta")
           end
         end
 
